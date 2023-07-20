@@ -320,6 +320,12 @@
     {%- endif -%}
 {% if product.handle == "handbag" or template.name == "cart" %}
   <script>
+    function removeSelected(){
+      let optionItems2 = document.querySelectorAll(".dropdown__options li");
+      optionItems2.forEach(function(item) {
+        item.classList.remove("selected");  
+      })
+    }
     async function addToCart(productId, variantId) {
       fetch('/cart/add.js', {
         method: 'POST',
@@ -367,22 +373,31 @@
         });
     }
     document.addEventListener('DOMContentLoaded', function() {
-      var variantSelect = document.querySelector('variant-selects .product-form__input--dropdown:not(.hidden) select'); // Replace '#product-select' with the correct selector for your theme's variant drop-down menu
+      var variantSelect = document.querySelectorAll('variant-radios input[name="Size"]'); // Replace '#product-select' with the correct selector for your theme's variant drop-down menu
       if (variantSelect) {
-        for (var i = 0; i < variantSelect.options.length; i++) {
-          if (variantSelect.options[i].value.toLowerCase() === 'unselected') {
-            variantSelect.selectedIndex = i;
+        for (var i = 0; i < variantSelect.length; i++) {
+          if (variantSelect[i].value.toLowerCase() === 'unselected') {
+              const dropdownSelected = document.querySelector(".dropdown__selected");
+              // Set default selected value on page load
+              if (dropdownSelected) {
+                 removeSelected && removeSelected();
+                dropdownSelected.textContent = variantSelect[i].value.trim();
+                variantSelect[i].parentNode.classList.add("selected");
+              }
+             variantSelect[i].checked = true;
             break;
           }
         }
-        document.querySelector('variant-selects').dispatchEvent((new Event("change")));
+        document.querySelector('variant-radios') && document.querySelector('variant-radios').dispatchEvent((new Event("change")));
       }
       subscribe(PUB_SUB_EVENTS.cartUpdate, async ({source, productVariantId,quantity}) => {
+        console.log({source, productVariantId,quantity});
         if(productVariantId === "45737312715035"){
           if(source === "product-form"){
             await addToCart(`{{-product.id-}}`,45620610924827);
           }else if(source === "cart-items" && quantity <= 0){
-            await removeFromCart(45620610924827);
+            const cartItems = document.querySelector('cart-items') || document.querySelector('cart-drawer-items');
+            cartItems.updateQuantityByKey("45620610924827", 0);
           }
         }
       });

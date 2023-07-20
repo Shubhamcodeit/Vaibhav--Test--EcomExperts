@@ -487,9 +487,125 @@
     </script>
     <script src="{{ 'product-model.js' | asset_url }}" defer></script>
   {%- endif -%}
+<style>
+  /* Reset default list styles */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
+/* Hide the radio buttons */
+input[type="radio"] {
+  display: none;
+}
+
+/* Dropdown container style */
+.dropdown {
+  position: relative;
+  width: 200px; /* Adjust as needed */
+}
+
+/* Dropdown selected option style */
+.dropdown__selected {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Dropdown options style */
+.dropdown__options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  z-index: 9999;
+
+}
+
+/* Show the options when the dropdown is open */
+.dropdown .dropdown__options.open {
+  display: block;
+}
+
+/* Style each option */
+.dropdown__options li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* Highlight the selected option */
+.dropdown__options li.selected {
+  background-color: #000;
+  color:#fff;
+}
+.dropdown__options li.selected label {
+    color:#fff !important;
+}
+.dropdown__options li label {
+    color:#000 !important;
+}
+/* Hover effect on options */
+.dropdown__options li:hover {
+  background-color: #000;
+}
+.dropdown__options li:hover label {
+    color:#fff !important;
+}
+.dropdown__options li input[type=radio]+label {
+   border: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+    color: #000;
+}
+
+.dropdown__options li input[type=radio]:checked+label {
+   border: none;
+    background-color: transparent;
+    color: #fff;
+}
+</style>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+      const dropdownSelected = document.querySelector(".dropdown__selected");
+      const dropdownOptions = document.querySelector(".dropdown__options");
+      const defaultSelected = document.querySelector(".dropdown__options li input:checked");
+
+      // Set default selected value on page load
+      if (defaultSelected) {
+        dropdownSelected.textContent = defaultSelected.value.trim();
+      }
+  
+      dropdownSelected.addEventListener("click", function() {
+        dropdownOptions.classList.toggle("open");
+      });
+  
+      const optionItems = document.querySelectorAll(".dropdown__options li");
+      optionItems.forEach(function(item) {
+        item.addEventListener("click", function() {
+          removeSelected();
+          const optionText = this.textContent.trim();
+          const optionValue = this.querySelector("input[type='radio']").value;
+          const dropdown = this.closest(".dropdown");
+          dropdown.classList.remove("open");
+          dropdown.querySelector(".dropdown__selected").textContent = optionValue;
+          const radioInput = this.querySelector("input[type='radio']");
+          radioInput.value = optionValue;
+          radioInput.checked = true;
+          document.querySelector('variant-radios').dispatchEvent((new Event("change")));
+          dropdownOptions.classList.toggle("open");
+          this.classList.add("selected");
+        });
+      });
+      
       function isIE() {
         const ua = window.navigator.userAgent;
         const msie = ua.indexOf('MSIE ');
@@ -512,6 +628,9 @@
       document.querySelector('#Variants-{{ section.id }}').addEventListener('change', function (event) {
         hiddenInput.value = event.currentTarget.value;
       });
+
+
+     
     });
   </script>
 

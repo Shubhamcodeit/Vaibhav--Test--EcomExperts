@@ -45,25 +45,49 @@
     endfor
   -%}
 
-  {%- if block.settings.picker_type == 'button' and picker_type == "button"-%}
-    <input
-      type="radio"
-      id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
-      name="{{ option.name }}"
-      value="{{ value | escape }}"
-      form="{{ product_form_id }}"
-      {% if option.selected_value == value %}
-        checked
-      {% endif %}
-      {% if option_disabled %}
-        class="disabled"
-      {% endif %}
-    >
-    <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-      {{ value -}}
-      <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+  {%- if block.settings.picker_type == 'button' -%}
+    {% if optionName != "color" %}
+      <li class="{% if option.selected_value == value %}
+            selected
+          {% endif %}">
+        <input
+          type="radio"
+          id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+          name="{{ option.name }}"
+          value="{{ value | escape }}"
+          form="{{ product_form_id }}"
+          {% if option.selected_value == value %}
+            checked
+          {% endif %}
+          {% if option_disabled %}
+            class="disabled"
+          {% endif %}
+        >
+        <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+          {{ value -}}
+          <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+        </label>
+      </li>
+    {% else %}
+        <input
+          type="radio"
+          id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+          name="{{ option.name }}"
+          value="{{ value | escape }}"
+          form="{{ product_form_id }}"
+          {% if option.selected_value == value %}
+            checked
+          {% endif %}
+          {% if option_disabled %}
+            class="disabled"
+          {% endif %}
+        >
+       <label style="padding: 2px;position: relative;height: 38px;width: 38px;"  for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+    <span style="background-color:  {{ value -}};height: 35px;width: 35px;display: inline-block;border-radius: 50%;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);" for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"></span>
+   <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
     </label>
-  {%- else -%}
+    {%  endif %}
+  {%- elsif block.settings.picker_type == 'dropdown' -%}
     <option
       value="{{ value | escape }}"
       {% if option.selected_value == value %}
