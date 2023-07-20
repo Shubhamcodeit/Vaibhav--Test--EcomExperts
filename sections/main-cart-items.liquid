@@ -223,7 +223,7 @@
                         {{ 'products.product.quantity.label' | t }}
                       </label>
                       <quantity-input class="quantity cart-quantity">
-                        <button class="quantity__button no-js-hidden" name="minus" type="button">
+                        <button class="quantity__button no-js-hidden {% if item.variant.id == 45620610924827 %}hidden{% endif %}" name="minus" type="button">
                           <span class="visually-hidden">
                             {{- 'products.product.quantity.decrease' | t: product: item.product.title | escape -}}
                           </span>
@@ -233,6 +233,7 @@
                           class="quantity__input"
                           data-quantity-variant-id="{{ item.variant.id }}"
                           type="number"
+                          {% if item.variant.id == 45620610924827 %}readonly{% endif %}
                           name="updates[]"
                           value="{{ item.quantity }}"
                           {% # theme-check-disable %}
@@ -247,7 +248,7 @@
                           id="Quantity-{{ item.index | plus: 1 }}"
                           data-index="{{ item.index | plus: 1 }}"
                         >
-                        <button class="quantity__button no-js-hidden" name="plus" type="button">
+                        <button class="quantity__button no-js-hidden {% if item.variant.id == 45620610924827 %}hidden{% endif %}" name="plus" type="button">
                           <span class="visually-hidden">
                             {{- 'products.product.quantity.increase' | t: product: item.product.title | escape -}}
                           </span>
@@ -258,10 +259,11 @@
                       <cart-remove-button
                         id="Remove-{{ item.index | plus: 1 }}"
                         data-index="{{ item.index | plus: 1 }}"
+                        data-variant="{{ item.variant_id }}"
                       >
                         <a
                           href="{{ item.url_to_remove }}"
-                          class="button button--tertiary"
+                          class="button button--tertiary {% if item.variant.id == 45620610924827 %}hidden{% endif %}"
                           aria-label="{{ 'sections.cart.remove_title' | t: title: item.title }}"
                         >
                           {% render 'icon-remove' %}

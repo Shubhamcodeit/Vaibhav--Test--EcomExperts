@@ -5,7 +5,7 @@ class CartRemoveButton extends HTMLElement {
     this.addEventListener('click', (event) => {
       event.preventDefault();
       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
-      cartItems.updateQuantity(this.dataset.index, 0);
+      cartItems.updateQuantity(this.dataset.index, 0,"", this.dataset.variant);
     });
   }
 }
@@ -84,7 +84,7 @@ class CartItems extends HTMLElement {
     ];
   }
 
-  updateQuantity(line, quantity, name) {
+  updateQuantity(line, quantity, name, variantId = null) {
     this.enableLoading(line);
 
     const body = JSON.stringify({
@@ -147,7 +147,7 @@ class CartItems extends HTMLElement {
         } else if (document.querySelector('.cart-item') && cartDrawerWrapper) {
           trapFocus(cartDrawerWrapper, document.querySelector('.cart-item__name'));
         }
-        publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items' });
+        publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', productVariantId:variantId, quantity:quantity });
       })
       .catch(() => {
         this.querySelectorAll('.loading-overlay').forEach((overlay) => overlay.classList.add('hidden'));
