@@ -22,10 +22,25 @@
       {{ block.shopify_attributes }}
     >
       {%- for option in product.options_with_values -%}
-        <fieldset class="js product-form__input">
-          <legend class="form__label">{{ option.name }}</legend>
-          {% render 'product-variant-options', product: product, option: option, block: block %}
-        </fieldset>
+        {% comment %}Code for new custom dropdown size selector{% endcomment %}
+        {% assign optionName = option.name | downcase %}
+        {% if optionName != "color" %}
+          <fieldset class="js product-form__input">
+            <legend class="form__label">{{ option.name }}</legend>
+             <div class="dropdown">
+            <div class="dropdown__selected">Select an option</div>
+              <ul class="dropdown__options">
+                {% render 'product-variant-options', product: product, option: option, block: block,optionName:optionName %}
+              </ul>
+             </div>
+          </fieldset>
+        {% else %}
+          <fieldset class="js product-form__input">
+            <legend class="form__label">{{ option.name }}</legend>
+            {% render 'product-variant-options', product: product, option: option, block: block,optionName:optionName %}
+          </fieldset>
+        {% endif %}
+         {% comment %}end Code for new custom dropdown size selector{% endcomment %}
       {%- endfor -%}
       <script type="application/json">
         {{ product.variants | json }}

@@ -318,5 +318,91 @@
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+{% if product.handle == "handbag" or template.name == "cart" %}
+  <script>
+    function removeSelected(){
+      let optionItems2 = document.querySelectorAll(".dropdown__options li");
+      optionItems2.forEach(function(item) {
+        item.classList.remove("selected");  
+      })
+    }
+    async function addToCart(productId, variantId) {
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              id: variantId,
+              quantity: 1,
+              properties:{
+                _parentProductId:productId
+              }
+            },
+          ],
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Product added to cart:', data);
+        })
+        .catch(error => {
+          console.error('Error adding product to cart:', error);
+        });
+    }
+    async function removeFromCart(variantId) {
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          updates: {
+            [variantId]: 0,
+          },
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Product removed from cart:', data);
+        })
+        .catch(error => {
+          console.error('Error removing product from cart:', error);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      var variantSelect = document.querySelectorAll('variant-radios input[name="Size"]'); // Replace '#product-select' with the correct selector for your theme's variant drop-down menu
+      if (variantSelect) {
+        for (var i = 0; i < variantSelect.length; i++) {
+          if (variantSelect[i].value.toLowerCase() === 'unselected') {
+              const dropdownSelected = document.querySelector(".dropdown__selected");
+              // Set default selected value on page load
+              if (dropdownSelected) {
+                 removeSelected && removeSelected();
+                dropdownSelected.textContent = variantSelect[i].value.trim();
+                variantSelect[i].parentNode.classList.add("selected");
+              }
+             variantSelect[i].checked = true;
+            break;
+          }
+        }
+        document.querySelector('variant-radios') && document.querySelector('variant-radios').dispatchEvent((new Event("change")));
+      }
+      subscribe(PUB_SUB_EVENTS.cartUpdate, async ({source, productVariantId,quantity}) => {
+        console.log({source, productVariantId,quantity});
+        if(productVariantId === "45737312715035"){
+          if(source === "product-form"){
+            await addToCart(`{{-product.id-}}`,45620610924827);
+          }else if(source === "cart-items" && quantity <= 0){
+            const cartItems = document.querySelector('cart-items') || document.querySelector('cart-drawer-items');
+            cartItems.updateQuantityByKey("45620610924827", 0);
+          }
+        }
+      });
+    });
+  </script>
+{%  endif %}
   </body>
 </html>
