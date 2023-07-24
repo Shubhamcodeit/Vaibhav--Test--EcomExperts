@@ -30,6 +30,17 @@ if (!customElements.get('product-form')) {
         delete config.headers['Content-Type'];
 
         const formData = new FormData(this.form);
+// Code added to check if the selected Size value is Unselected and return alert
+        let selectedSize = document.querySelector('[name="Size"]:checked') && document.querySelector('[name="Size"]:checked').value;
+        if(selectedSize.toLowerCase() === "unselected"){
+          alert("Please select size");
+          this.submitButton.classList.remove('loading');
+          if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
+          if (!this.error) this.submitButton.removeAttribute('aria-disabled');
+          this.querySelector('.loading-overlay__spinner').classList.add('hidden');
+          return;
+        }
+// end code for selected Size value is Unselected and return alert
         if (this.cart) {
           formData.append(
             'sections',
